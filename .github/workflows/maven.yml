@@ -1,4 +1,4 @@
-name: Compilação e Testes Java
+name: Testes e Compilação Java
 
 on:
   pull_request:
@@ -19,12 +19,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Compilar projeto com Maven
-        run: mvn -B package -Dspring.profiles.active=test
+      - name: Etapa 1 - Executar os testes
+        run: mvn -B test -Dspring.profiles.active=test
         working-directory: empregapi
 
-      - name: Upload Build Artifact
+      - name: Etapa 2 - Empacotar o projeto
+        run: mvn -B package -DskipTests -Dspring.profiles.active=test
+        working-directory: empregapi
+
+      - name: Etapa 3 - Fazer upload do artefato
         uses: actions/upload-artifact@v4
         with:
           name: programa
-          path: empregapi/target
+          path: empregapi/target/*.jar
