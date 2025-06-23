@@ -1,0 +1,52 @@
+name: Entrega Continua
+
+on:
+  workflow_call:
+
+jobs:
+  AWS:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Download do Artefato Java
+        uses: actions/download-artifact@v4
+        with:
+          name: programa
+          path: ./
+
+      - name: Deploy na EC2
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_AWS }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST_AWS }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER_AWS }}
+          TARGET: /home/${{ secrets.REMOTE_USER_AWS }}
+          EXCLUDE: "postgres-data"
+
+          SCRIPT_AFTER: |
+            cd /home/${{ secrets.REMOTE_USER_AWS }}
+
+            # Renomeia o arquivo jar para app.jar
+            mv *.jar app.jar
+
+            # Para aplicação Java em execução, se houver
+            pkill -f 'java -jar app.jar' || true
+
+            # Cria script para rodar a aplicação com variáveis de ambiente
+            echo "#!/bin/bash" > run_app.sh
+            echo "export DB_PASS_PROD='${{ secrets.DB_PASS_PROD }}'" >> run_app.sh
+            echo "export DB_URL_PROD='${{ secrets.DB_URL_PROD }}'" >> run_app.sh
+            echo "export DB_USER_PROD='${{ secrets.DB_USER_PROD }}'" >> run_app.sh
+            echo "export JWT_EXPIRATION='${{ secrets.JWT_EXPIRATION }}'" >> run_app.sh
+            echo "export JWT_SECRET_PROD='${{ secrets.JWT_SECRET_PROD }}'" >> run_app.sh
+            echo "export SPRING_JPA_HIBERNATE_DDL_AUTO='${{ secrets.SPRING_JPA_HIBERNATE_DDL_AUTO }}'" >> run_app.sh
+            echo "export SPRING_PROFILES_ACTIVE='${{ secrets.SPRING_PROFILES_ACTIVE }}'" >> run_app.sh
+
+            # Comando para rodar o jar em background com nohup
+            echo "nohup java -jar app.jar > nohup.out 2> nohup.err < /dev/null &" >> run_app.sh
+
+            chmod +x run_app.sh
+            nohup ./run_app.sh > nohup.out 2> nohup.err < /dev/null &
