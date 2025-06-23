@@ -2,7 +2,7 @@ name: Testes e Compilação Java
 
 on:
   pull_request:
-    branches: ["main"]
+    branches: ["*"]
 
 jobs:
   build:
@@ -35,5 +35,5 @@ jobs:
 
   deploy-ec2:
     needs: build
-    uses: ./.github/workflows/Entrega-Continua.yml
+    uses: ./.github/workflows/Entrega-continua.yml
     secrets: inherit
