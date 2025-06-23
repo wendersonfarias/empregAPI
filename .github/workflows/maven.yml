@@ -32,3 +32,8 @@ jobs:
         with:
           name: programa
           path: empregapi/target/*.jar
+
+  deploy-ec2:
+    needs: build
+    uses: ./.github/workflows/Entrega-Continua.yml
+    secrets: inherit
