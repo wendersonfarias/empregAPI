@@ -28,6 +28,15 @@ jobs:
           SCRIPT_AFTER: |
             cd /home/${{ secrets.REMOTE_USER_AWS }}
 
+            # Verifica se o Java está instalado, se não instala o Amazon Corretto 21
+            if ! java -version &>/dev/null; then
+              echo "Java não encontrado. Instalando Amazon Corretto 21..."
+              sudo amazon-linux-extras enable corretto21
+              sudo yum install -y java-21-amazon-corretto
+            else
+              echo "Java já está instalado."
+            fi
+
             echo "Parando app atual se estiver rodando..."
             pkill -f 'java -jar app.jar' || true
 
