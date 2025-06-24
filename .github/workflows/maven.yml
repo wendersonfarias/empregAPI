@@ -33,6 +33,10 @@ jobs:
           name: programa
           path: empregapi/target/*.jar
 
+  docker:
+    needs: build
+    uses: ./.github/workflows/Docker.yml
+
   deploy-ec2:
     needs: build
     uses: ./.github/workflows/entrega-continua.yml
