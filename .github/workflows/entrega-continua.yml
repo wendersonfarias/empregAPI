@@ -50,7 +50,7 @@ jobs:
             export DB_URL_PROD="${DB_URL_PROD}"
             export DB_USER_PROD="${DB_USER_PROD}"
             export JWT_EXPIRATION="${JWT_EXPIRATION}"
-            export JWT_SECRET_PROD="${JWT_SECRET_PROD}"
+            export JWT_SECRET="${JWT_SECRET_PROD}"
             export SPRING_JPA_HIBERNATE_DDL_AUTO="${SPRING_JPA_HIBERNATE_DDL_AUTO}"
             export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE}"
             nohup java -jar app.jar > nohup.out 2> nohup.err < /dev/null &
