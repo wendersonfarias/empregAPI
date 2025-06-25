@@ -33,7 +33,12 @@ jobs:
           name: programa
           path: empregapi/target/*.jar
 
-  deploy-ec2:
+  docker:
     needs: build
-    uses: ./.github/workflows/entrega-continua.yml
+    uses: ./.github/workflows/Docker.yml
     secrets: inherit
+
+  # deploy-ec2:
+  #   needs: build
+  #   uses: ./.github/workflows/entrega-continua.yml
+  #   secrets: inherit

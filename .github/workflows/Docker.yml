@@ -1,0 +1,41 @@
+name: Docker Build and Push
+
+on:
+  workflow_call:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Build
+        uses: docker/setup-buildx-action@v3.11.1
+
+      - name: Download do Artefato Java
+        uses: actions/download-artifact@v4
+        with:
+          name: programa
+          path: ./
+
+      - name: Docker Login
+        uses: docker/login-action@v3.4.0
+        with:
+          username: wendersonf
+          password: ${{ secrets.TOKEN_DOCKER_HUB }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v6.18.0
+        with:
+          context: ./empregapi
+          file: ./empregapi/Dockerfile
+          push: true
+          tags: |
+            wendersonf/empregapi:latest
+          cache-from: type=registry,ref=wendersonf/empregapi:cache
+          cache-to: type=registry,ref=wendersonf/empregapi:cache,mode=max
+          build-args: |
+            JAR_FILE=target/*.jar
+            SPRING_PROFILES_ACTIVE=test
