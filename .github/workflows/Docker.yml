@@ -34,7 +34,6 @@ jobs:
           push: true
           tags: |
             wendersonf/empregapi:latest
-            wendersonf/empregapi:${{ github.ref_name }}
           cache-from: type=registry,ref=wendersonf/empregapi:cache
           cache-to: type=registry,ref=wendersonf/empregapi:cache,mode=max
           build-args: |
